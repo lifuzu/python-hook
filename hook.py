@@ -1,8 +1,8 @@
 
 from functools import wraps
 
-class delegate(object):
-    """docstring for delegate"""
+class hook(object):
+    """docstring for hook"""
     def __init__(self, func):
         self.callfores = []
         self.callbacks = []
@@ -22,10 +22,10 @@ class delegate(object):
 
         return wrapper
 
-    def callback(self, func, args: dict = None):
+    def callback(self, func):
 
         def wrapper(*args, **kwargs):
-            print("In callfore wrapper: {}".format(args))
+            print("In callback wrapper: {}".format(args))
             for k, v in kwargs.items():
                 print("{k} = {v}".format(k, v))
             return func(*args, **kwargs)
@@ -98,7 +98,7 @@ class delegate(object):
             if retval is not None:
                 self.outputs[func.__qualname__] = retval
 
-@delegate
+@hook
 def do_something(a: int = 5, b: int = 4):
     print("do something: {}, {}".format(a, b))
     return {'a': a, 'b': b}
