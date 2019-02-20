@@ -9,12 +9,20 @@ class hook(object):
         self.func = func
         self.outputs = {}
 
+        setattr(self, 'output', (
+            self.func.__module__ + '.' + self.func.__name__))
+
     def callfore(self, func):
 
+        setattr(func, 'output', (
+            func.__module__ + '.' + func.__name__))
+
+        @wraps(func, assigned = ('output'))
         def wrapper(*args, **kwargs):
             print("In callfore wrapper: {}".format(args))
             for k, v in kwargs.items():
                 print("{k} = {v}".format(k, v))
+
             return func(*args, **kwargs)
 
         if callable(func):
@@ -24,6 +32,10 @@ class hook(object):
 
     def callback(self, func):
 
+        setattr(func, 'output', (
+            func.__module__ + '.' + func.__name__))
+
+        @wraps(func, assigned = ('output'))
         def wrapper(*args, **kwargs):
             print("In callback wrapper: {}".format(args))
             for k, v in kwargs.items():
@@ -83,20 +95,20 @@ class hook(object):
             retval = func()
 
             if retval is not None:
-                self.outputs[func.__qualname__] = retval
+                self.outputs[(func.__module__ + '.' + func.__name__)] = retval
 
         # processing the base func
         retval = self.func(*args, **kwargs)
 
         if retval is not None:
-            self.outputs[self.func.__qualname__] = retval
+            self.outputs[(self.func.__module__ + '.' + self.func.__name__)] = retval
 
         # processing the funcs in callbacks
         for func in self.callbacks:
             retval = func()
 
             if retval is not None:
-                self.outputs[func.__qualname__] = retval
+                self.outputs[(func.__module__ + '.' + func.__name__)] = retval
 
 @hook
 def do_something(a: int = 5, b: int = 4):
@@ -109,8 +121,12 @@ def do_something_before_1(any: int = 3):
     print("do do_something_before_1: {}".format(any))
     return {'a': 12 + any, 'z': 34}
 
+# print(dir(do_something_before_1))
+print(do_something_before_1.output)
+# print(dir(do_something_before_1.__wraped__.retval))
+
 @do_something.callfore
-@do_something.inject_vars({'retval': 'do_something_before_1'})
+@do_something.inject_vars({'retval': do_something_before_1.output})
 # @do_something.inject_vars(retval = 'do_something_before_1')
 # @do_something.inject_vars({'retval': {'a': 12, 'z': 34}})
 def do_something_before_2(other = "helo other"):
@@ -120,7 +136,7 @@ def do_something_before_2(other = "helo other"):
 
 
 @do_something.callback
-@do_something.inject_vars(retval = 'do_something_before_2', retval2 = 'do_something')
+@do_something.inject_vars(retval = do_something_before_2.output, retval2 = do_something.output)
 def do_something_after_1(any: int = 888):
     print("do do_something_after_1: {}".format(any))
     print("a in do_something_after_1: {}".format(any + retval['a'] + retval2['b']))
@@ -129,7 +145,7 @@ def do_something_after_1(any: int = 888):
     return {}
 
 @do_something.callback
-@do_something.inject_vars(retval = 'do_something_after_1')
+@do_something.inject_vars(retval = do_something_after_1.output)
 def do_something_after_2(other_dict = {"a": 12, "b": 34}):
     print("do do_something_after_2: {}".format(other_dict))
 
