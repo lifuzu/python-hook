@@ -116,7 +116,7 @@ def do_something_before_1(any: int = 3):
     return {'a': 12 + any, 'z': 34}
 
 # print(dir(do_something_before_1))
-print(do_something_before_1.output)
+# print(do_something_before_1.output)
 # print(dir(do_something_before_1.__wraped__.retval))
 
 @do_something.callfore
