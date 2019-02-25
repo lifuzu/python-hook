@@ -106,17 +106,23 @@ class hook(object):
             if retval is not None:
                 self.outputs[(func.__module__ + '.' + func.__name__)] = retval
 
-
+from time import time, sleep
 
 @hook
 def do_something(a: int = 5, b: int = 4):
+    print(time())
     print("do something: {}, {}".format(a, b))
+    sleep(5)
+    print(time())
     return {'a': a, 'b': b}
 
 
 @do_something.callfore
 def do_something_before_1(any: int = 3):
+    print(time())
     print("do do_something_before_1: {}".format(any))
+    sleep(5)
+    print(time())
     return {'a': 12 + any, 'z': 34}
 
 # print(dir(do_something_before_1))
@@ -128,24 +134,33 @@ def do_something_before_1(any: int = 3):
 # @do_something.params(retval = 'do_something_before_1')
 # @do_something.params({'retval': {'a': 12, 'z': 34}})
 def do_something_before_2(other = "helo other"):
-    print("do do_something_before_2: {}".format(other))
     print("a: ", retval['a'] + retval_2['a'])
+    print(time())
+    print("do do_something_before_2: {}".format(other))
+    sleep(5)
+    print(time())
     return {'a': 12 + retval['a'], 'z': 34}
 
 
 @do_something.callback
 @do_something.params(retval = do_something_before_2.output, retval2 = do_something.output)
 def do_something_after_1(any: int = 888):
-    print("do do_something_after_1: {}".format(any))
     print("a in do_something_after_1: {}".format(any + retval['a'] + retval2['b']))
     print("retval: {}".format(retval))
     print("retval_2: {}".format(retval2))
+    print(time())
+    print("do do_something_after_1: {}".format(any))
+    sleep(5)
+    print(time())
     return {}
 
 @do_something.callback
 @do_something.params(retval = do_something_after_1.output)
 def do_something_after_2(other_dict = {"a": 12, "b": 34}):
+    print(time())
     print("do do_something_after_2: {}".format(other_dict))
+    sleep(5)
+    print(time())
 
 
 
