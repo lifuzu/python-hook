@@ -1,6 +1,6 @@
 #!python
 
-from interface import implements, Interface
+from interface import Interface
 
 
 class Event(Interface):

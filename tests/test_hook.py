@@ -8,15 +8,15 @@ if __package__ is None:
     sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
     from hook import hook
 else:
-    from ..hook import hook
+    from hook import hook
 
 
-def a(n):
-    if n > 10:
-        b()
+# def a(n):
+#     if n > 10:
+#         b()
 
-def b():
-    print("test")
+# def b():
+#     print("test")
 
 # @hook
 # def do_something():
@@ -45,15 +45,15 @@ class TestPythonHook(unittest.TestCase):
     def setUp(self):
         pass
 
-    @patch('__main__.b')
-    def test_b_called(self, mock):
-        a(11)
-        self.assertTrue(mock.called)
+    # @patch('__main__.b')
+    # def test_b_called(self, mock):
+    #     a(11)
+    #     self.assertTrue(mock.called)
 
-    @patch('__main__.b')
-    def test_b_not_called(self, mock):
-        a(10)
-        self.assertFalse(mock.called)
+    # @patch('__main__.b')
+    # def test_b_not_called(self, mock):
+    #     a(10)
+    #     self.assertFalse(mock.called)
 
     def test_callfore(self):
 
@@ -101,7 +101,7 @@ class TestPythonHook(unittest.TestCase):
 
         do_something()
 
-        self.assertFalse(do_something.output, do_something.outputs)
+        self.assertFalse(do_something.output in do_something.outputs)
 
         self.assertEqual(do_something.outputs[a_callfore.output], {"a": 1})
         self.assertNotEqual(do_something.outputs[a_callfore.output], {"b": 2})
@@ -126,6 +126,7 @@ class TestPythonHook(unittest.TestCase):
         do_something()
 
         self.assertTrue(len(do_something.outputs) == 2)
+        self.assertTrue(do_something.output in do_something.outputs)
 
         self.assertEqual(do_something.outputs[do_something.output], {"a": 1})
 
