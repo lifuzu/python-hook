@@ -1,3 +1,4 @@
+#!python
 
 from functools import wraps
 
@@ -19,6 +20,7 @@ class hook(object):
 
         @wraps(func, assigned = ('output'))
         def wrapper(*args, **kwargs):
+            # TODO: run twice?
             return func(*args, **kwargs)
 
         if callable(func):
@@ -33,6 +35,7 @@ class hook(object):
 
         @wraps(func, assigned = ('output'))
         def wrapper(*args, **kwargs):
+            # TODO: run twice?
             return func(*args, **kwargs)
 
         if callable(func):
@@ -68,11 +71,12 @@ class hook(object):
                         elif v in self.outputs:
                             context[k] = self.outputs[v]
                         else:
-                            raise Exception(f"ERROR: check if the function: {v} return dict!".format(v))
+                            raise Exception("ERROR: check if the function: {v} return dict!".format(v))
                 if context:
                     func_globals.update(context)
 
                 try:
+                    # TODO: run twice?
                     result = func(*args, **kwargs)
                 finally:
                     func_globals = saved_values         # Restore the changes
